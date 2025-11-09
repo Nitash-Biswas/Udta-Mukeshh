@@ -117,16 +117,13 @@ function App() {
           transition: "transform 0.2s ease-out",
         }}
       >
-        {isAssetsLoading && (
-          <div className="flex flex-col items-center justify-center w-full h-full bg-[#333] border-4 border-black rounded-lg">
-            <h2 className="text-3xl font-bold text-white animate-pulse">
-              Loading...
-            </h2>
-          </div>
-        )}
         {!gameStarted ? (
           // --- Main Menu ---
           <div className="flex flex-col items-center justify-center gap-6 w-full h-full bg-[#70c5ce] border-4 border-black rounded-lg shadow-[0_10px_20px_rgba(0,0,0,0.3)] overflow-hidden relative p-4">
+            { isAssetsLoading ? (<h2 className="text-3xl font-bold text-white animate-pulse">
+              Loading...
+            </h2>) :
+            (<>
             <h1 className="text-[4.5rem] font-black text-white text-center leading-none m-0">
               Udta Mukeshhh
             </h1>
@@ -171,7 +168,10 @@ function App() {
             >
               PLAY
             </button>
+            </>
+        )}
           </div>
+
         ) : (
           <>
             {!gameOver && (
