@@ -2,19 +2,57 @@ import React, { useState, useEffect } from 'react';
 import Game from './GameLoop';
 import './App.css';
 
+// --- NEW: Import assets here for preloading ---
+import birdImageUrl from "./assets/Shaurya.png";
+import pipeImageUrl from "./assets/Block.jpg";
+import bgImageUrl from "./assets/Nsut.webp";
+import jumpSoundUrl from "./assets/Jump.mp3";
+import loseSoundUrl from "./assets/Lose.mp3";
+import winSoundUrl from "./assets/Win.mp3";
+import bgMusicUrl from "./assets/Bg.mp3";
+import winImageUrl from "./assets/Win.jpg";
+
 // Shared constants needed for scaling
 const GAME_WIDTH = 500;
 const GAME_HEIGHT = 600;
 const LOCAL_STORAGE_KEY = 'flappySphereHighScore';
 
+// --- NEW: Helper function to preload assets ---
+const preloadAssets = () => {
+  const images = [birdImageUrl, pipeImageUrl, bgImageUrl, winImageUrl];
+  const audio = [jumpSoundUrl, loseSoundUrl, winSoundUrl, bgMusicUrl];
+
+  const imagePromises = images.map(src => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = src;
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+  });
+
+  const audioPromises = audio.map(src => {
+    return new Promise((resolve, reject) => {
+      const aud = new Audio();
+      aud.src = src;
+      aud.oncanplaythrough = resolve; 
+      aud.onerror = reject;
+      aud.load();
+    });
+  });
+
+  return Promise.all([...imagePromises, ...audioPromises]);
+};
+
+
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [scale, setScale] = useState(1);
   const [gameId, setGameId] = useState(0);
   const [isInfinite, setIsInfinite] = useState(false);
-  // New state for custom win score
   const [winScore, setWinScore] = useState(20);
 
   const [highScore, setHighScore] = useState(() => {
@@ -39,8 +77,25 @@ function App() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  useEffect(() => {
+    if (isLoading) {
+      preloadAssets()
+        .then(() => {
+          setGameStarted(true);
+          setIsLoading(false);
+        })
+        .catch(err => {
+
+          console.error("Failed to preload assets:", err);
+          alert("Failed to load game assets. Please refresh the page.");
+          setIsLoading(false);
+        });
+    }
+  }, [isLoading]);
+
   const handleStart = () => {
-    setGameStarted(true);
+
+    setIsLoading(true);
     setGameOver(false);
     setScore(0);
     setGameId((prev) => prev + 1);
@@ -67,7 +122,8 @@ function App() {
           transition: 'transform 0.2s ease-out',
         }}
       >
-        {!gameStarted ? (
+
+        {!gameStarted && !isLoading && (
           // --- Main Menu ---
           <div className="flex flex-col items-center justify-center gap-6 w-full h-full bg-[#70c5ce] border-4 border-black rounded-lg shadow-[0_10px_20px_rgba(0,0,0,0.3)] overflow-hidden relative p-4">
             <h1 className="text-[4.5rem] font-black text-white text-center leading-none m-0">
@@ -113,7 +169,19 @@ function App() {
               PLAY
             </button>
           </div>
-        ) : (
+        )}
+
+
+        {isLoading && (
+          <div className="flex flex-col items-center justify-center w-full h-full bg-[#333] border-4 border-black rounded-lg">
+            <h2 className="text-3xl font-bold text-white animate-pulse">
+              Loading...
+            </h2>
+          </div>
+        )}
+
+
+        {gameStarted && !isLoading && (
           <>
             {!gameOver && (
               <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl font-mono font-bold text-white bg-black/50 px-6 py-2 rounded-full border-2 border-black z-50">
