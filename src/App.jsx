@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import Game from './GameLoop';
-import './App.css';
+import React, { useState, useEffect } from "react";
+import Game from "./GameLoop";
+import "./App.css";
 
 // --- Import assets here for preloading ---
 import birdImageUrl from "./assets/Shaurya.png";
@@ -15,14 +15,14 @@ import winImageUrl from "./assets/Win.jpg";
 // Shared constants needed for scaling
 const GAME_WIDTH = 500;
 const GAME_HEIGHT = 600;
-const LOCAL_STORAGE_KEY = 'flappySphereHighScore';
+const LOCAL_STORAGE_KEY = "flappySphereHighScore";
 
 // --- Function to preload assets ---
 const preloadAssets = () => {
   const images = [birdImageUrl, pipeImageUrl, bgImageUrl, winImageUrl];
   const audio = [jumpSoundUrl, loseSoundUrl, winSoundUrl, bgMusicUrl];
 
-  const imagePromises = images.map(src => {
+  const imagePromises = images.map((src) => {
     return new Promise((resolve, reject) => {
       const img = new Image();
       img.src = src;
@@ -31,7 +31,7 @@ const preloadAssets = () => {
     });
   });
 
-  const audioPromises = audio.map(src => {
+  const audioPromises = audio.map((src) => {
     return new Promise((resolve, reject) => {
       const aud = new Audio();
       aud.src = src;
@@ -44,10 +44,9 @@ const preloadAssets = () => {
   return Promise.all([...imagePromises, ...audioPromises]);
 };
 
-
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isAssetsLoading, setIsAssetsLoading] = useState(true);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [scale, setScale] = useState(1);
@@ -66,36 +65,32 @@ function App() {
 
   useEffect(() => {
     const handleResize = () => {
-      const s = Math.min(
-        window.innerWidth / GAME_WIDTH,
-        window.innerHeight / GAME_HEIGHT
-      ) * 0.95;
+      const s =
+        Math.min(
+          window.innerWidth / GAME_WIDTH,
+          window.innerHeight / GAME_HEIGHT
+        ) * 0.95;
       setScale(s);
     };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   useEffect(() => {
-    if (isLoading) {
-      preloadAssets()
-        .then(() => {
-          setGameStarted(true);
-          setIsLoading(false);
-        })
-        .catch(err => {
-
-          console.error("Failed to preload assets:", err);
-          alert("Failed to load game assets. Please refresh the page.");
-          setIsLoading(false);
-        });
-    }
-  }, [isLoading]);
+    preloadAssets()
+      .then(() => {
+        setIsAssetsLoading(false); // Assets are loaded, show the menu
+      })
+      .catch((err) => {
+        console.error("Failed to preload assets:", err);
+        alert("Failed to load game assets. Please refresh the page.");
+        // App will be stuck on loading screen, which is appropriate for a fatal error
+      });
+  }, []);
 
   const handleStart = () => {
-
-    setIsLoading(true);
+    setGameStarted(true);
     setGameOver(false);
     setScore(0);
     setGameId((prev) => prev + 1);
@@ -119,11 +114,17 @@ function App() {
           width: `${GAME_WIDTH}px`,
           height: `${GAME_HEIGHT}px`,
           flexShrink: 0,
-          transition: 'transform 0.2s ease-out',
+          transition: "transform 0.2s ease-out",
         }}
       >
-
-        {!gameStarted && !isLoading && (
+        {isAssetsLoading && (
+          <div className="flex flex-col items-center justify-center w-full h-full bg-[#333] border-4 border-black rounded-lg">
+            <h2 className="text-3xl font-bold text-white animate-pulse">
+              Loading...
+            </h2>
+          </div>
+        )}
+        {!gameStarted ? (
           // --- Main Menu ---
           <div className="flex flex-col items-center justify-center gap-6 w-full h-full bg-[#70c5ce] border-4 border-black rounded-lg shadow-[0_10px_20px_rgba(0,0,0,0.3)] overflow-hidden relative p-4">
             <h1 className="text-[4.5rem] font-black text-white text-center leading-none m-0">
@@ -132,34 +133,36 @@ function App() {
 
             {/* --- Game Options Container --- */}
             <div className="flex flex-col gap-4 items-center w-full max-w-xs">
-                {/* Infinite Toggle */}
-                <div className="flex items-center justify-between w-full bg-white/30 px-4 py-2 rounded-full border-2 border-black/20">
-                  <span className="font-bold text-[#333]">Infinite Arcade</span>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="sr-only peer"
-                      checked={isInfinite}
-                      onChange={(e) => setIsInfinite(e.target.checked)}
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#f0e456]"></div>
-                  </label>
-                </div>
+              {/* Infinite Toggle */}
+              <div className="flex items-center justify-between w-full bg-white/30 px-4 py-2 rounded-full border-2 border-black/20">
+                <span className="font-bold text-[#333]">Infinite Arcade</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    className="sr-only peer"
+                    checked={isInfinite}
+                    onChange={(e) => setIsInfinite(e.target.checked)}
+                  />
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#f0e456]"></div>
+                </label>
+              </div>
 
-                {/* Win Score Input */}
-                {!isInfinite && (
-                    <div className="flex items-center justify-between w-full bg-white/30 px-4 py-2 rounded-full border-2 border-black/20 animate-fade-in">
-                        <span className="font-bold text-[#333]">Target Score:</span>
-                        <input
-                            type="number"
-                            min="1"
-                            max="999"
-                            value={winScore}
-                            onChange={(e) => setWinScore(Math.max(1, parseInt(e.target.value) || 1))}
-                            className="w-16 text-center font-bold text-lg border-2 border-black/30 rounded-md p-1"
-                        />
-                    </div>
-                )}
+              {/* Win Score Input for Limited obstacle Level*/}
+              {!isInfinite && (
+                <div className="flex items-center justify-between w-full bg-white/30 px-4 py-2 rounded-full border-2 border-black/20 animate-fade-in">
+                  <span className="font-bold text-[#333]">Target Score:</span>
+                  <input
+                    type="number"
+                    min="1"
+                    max="999"
+                    value={winScore}
+                    onChange={(e) =>
+                      setWinScore(Math.max(1, parseInt(e.target.value) || 1))
+                    }
+                    className="w-16 text-center font-bold text-lg border-2 border-black/30 rounded-md p-1"
+                  />
+                </div>
+              )}
             </div>
 
             <button
@@ -169,23 +172,11 @@ function App() {
               PLAY
             </button>
           </div>
-        )}
-
-
-        {isLoading && (
-          <div className="flex flex-col items-center justify-center w-full h-full bg-[#333] border-4 border-black rounded-lg">
-            <h2 className="text-3xl font-bold text-white animate-pulse">
-              Loading...
-            </h2>
-          </div>
-        )}
-
-
-        {gameStarted && !isLoading && (
+        ) : (
           <>
             {!gameOver && (
               <div className="absolute top-4 left-1/2 -translate-x-1/2 text-3xl font-mono font-bold text-white bg-black/50 px-6 py-2 rounded-full border-2 border-black z-50">
-                {score} {isInfinite ? '' : `/ ${winScore}`}
+                {score} {isInfinite ? "" : `/ ${winScore}`}
               </div>
             )}
             <Game
