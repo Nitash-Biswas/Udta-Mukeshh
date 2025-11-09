@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Game from './GameLoop';
 import './App.css';
 
-// --- NEW: Import assets here for preloading ---
+// --- Import assets here for preloading ---
 import birdImageUrl from "./assets/Shaurya.png";
 import pipeImageUrl from "./assets/Block.jpg";
 import bgImageUrl from "./assets/Nsut.webp";
@@ -17,7 +17,7 @@ const GAME_WIDTH = 500;
 const GAME_HEIGHT = 600;
 const LOCAL_STORAGE_KEY = 'flappySphereHighScore';
 
-// --- NEW: Helper function to preload assets ---
+// --- Function to preload assets ---
 const preloadAssets = () => {
   const images = [birdImageUrl, pipeImageUrl, bgImageUrl, winImageUrl];
   const audio = [jumpSoundUrl, loseSoundUrl, winSoundUrl, bgMusicUrl];
@@ -35,7 +35,7 @@ const preloadAssets = () => {
     return new Promise((resolve, reject) => {
       const aud = new Audio();
       aud.src = src;
-      aud.oncanplaythrough = resolve; 
+      aud.oncanplaythrough = resolve;
       aud.onerror = reject;
       aud.load();
     });
