@@ -5,6 +5,15 @@ import Block from "./components/Block";
 import GameOverModal from "./components/GameOverModal";
 import GameWinModal from "./components/GameWinModal";
 
+import birdImageUrl from "./assets/Shaurya.png";
+import pipeImageUrl from "./assets/Block.jpg";
+import bgImageUrl from "./assets/Nsut.webp";
+import jumpSoundUrl from "./assets/Jump.mp3";
+import loseSoundUrl from "./assets/Lose.mp3";
+import winSoundUrl from "./assets/Win.mp3";
+import bgMusicUrl from "./assets/Bg.mp3";
+import winImageUrl from "./assets/Win.jpg";
+
 // --- Game Constants ---
 const GAME_WIDTH = 500;
 const GAME_HEIGHT = 600;
@@ -18,14 +27,15 @@ const JUMP_VELOCITY = -12;
 const SPAWN_RATE_MS = 2000;
 
 // --- Asset Paths ---
-const BIRD_IMAGE = "src/assets/Shaurya.png";
-const PIPE_IMAGE = "src/assets/Block.jpg";
-const BG_IMAGE = "src/assets/Nsut.webp";
-const JUMP_SOUND = "src/assets/Jump.mp3";
-const LOSE_SOUND = "src/assets/Lose.mp3";
-const WIN_SOUND = "src/assets/Win.mp3";
-const BG_MUSIC = "src/assets/Bg.mp3";
-const WIN_IMAGE = "src/assets/Win.jpg";
+
+const BIRD_IMAGE = birdImageUrl;
+const PIPE_IMAGE = pipeImageUrl;
+const BG_IMAGE = bgImageUrl;
+const JUMP_SOUND = jumpSoundUrl;
+const LOSE_SOUND = loseSoundUrl;
+const WIN_SOUND = winSoundUrl;
+const BG_MUSIC = bgMusicUrl;
+const WIN_IMAGE = winImageUrl;
 
 const Game = ({
   onGameOver,
