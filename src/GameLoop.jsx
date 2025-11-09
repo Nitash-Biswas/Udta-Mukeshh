@@ -22,7 +22,7 @@ const BIRD_RADIUS = 25;
 const PIPE_WIDTH = 60;
 const PIPE_GAP = 200;
 const PIPE_SPEED = 3.5;
-const GRAVITY = 0.9;
+const GRAVITY = 1.0;
 const JUMP_VELOCITY = -12;
 const SPAWN_RATE_MS = 2000;
 
