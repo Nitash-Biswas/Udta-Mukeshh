@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+h1 {
+   -webkit-text-stroke: 0.09em black;
+  paint-order: stroke fill;
+
+}
+h2 {
+   -webkit-text-stroke: 0.15em black;
+  paint-order: stroke fill;
+
+}
